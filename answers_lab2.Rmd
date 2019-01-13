@@ -35,9 +35,9 @@ Complete previously defined functions so that the package allows the generation 
 colnames(df)
 ```
 
-Including fields such as...
+We can find the dataframe generated below.
 
 
-```{r important_columns, include=FALSE}
-
+```{r important_columns}
+knitr::kable(df, format = "html")
 ```

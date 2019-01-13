@@ -22,17 +22,42 @@ GetCPEItems <- function(cpe.raw) {
   #cpe <- NewCPEItem()
 
   # transform the list to data frame
-  cpe.reference <- rvest::html_text(rvest::xml_nodes(cpe.raw,xpath="//d1:cpe-item/d1:references/d1:reference/@href"))
-  cpe.title <- rvest::html_text(rvest::xml_nodes(cpe.raw,xpath="//d1:cpe-item/d1:title"))
-  cpe.id <- rvest::html_text(rvest::xml_nodes(cpe.raw,xpath="//d1:cpe-item/@name"))
+  cpe.items <- rvest::xml_nodes(cpe.raw,xpath="//d1:cpe-item")
+  aux <- character(0)
+  cpe.items.aux <- cpe.items[1:10]
+  titles <- rbind()
+  references <- rbind()
+  names <- rbind()
+  for(cpe.item in cpe.items.aux){
+    title <- rvest::html_text(rvest::xml_nodes(cpe.item,xpath=".//d1:title"))
+    reference <- rvest::html_text(rvest::xml_nodes(cpe.item,xpath=".//d1:references/d1:reference/@href"))
+    name <- rvest::html_text(rvest::xml_nodes(cpe.item,xpath="./@name"))
+    print(name)
+    if(identical(aux,title)){
+      titles <- rbind(titles,NA)
+    }else{
+      titles <- rbind(titles,title)
+    }
 
-  # return data frame
-  aux.data.frame <- data.frame(title=cpe.title
-                              )
+    if(identical(aux,reference)){
+      references <- rbind(references,NA)
+    }else{
+      references <- rbind(references,reference)
+    }
+
+    if(identical(aux,name)){
+      names <- rbind(names,NA)
+    }else{
+      names <- rbind(names,name)
+    }
+
+
+  }
+  data.cpe <- data.frame(title=titles,reference=references[,1], name=names)
 
   # data manipulation
 
-  return(aux.data.frame)
+  return(data.cpe)
 }
 
 CleanCPEs <- function(cpes){
